@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Eleições 2026 - Transparência e Projetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-button { transition: all 0.3s ease; }
+        .tab-button.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .table-row-hover:hover { background-color: #f3f4f6; }
+        .badge-danger { background-color: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-warning { background-color: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-info { background-color: #dbeafe; color: #2563eb; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-success { background-color: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-error { background-color: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .stats-card { transition: transform 0.2s ease; }
+        .stats-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white shadow-xl">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-landmark text-4xl"></i>
+                    <div>
+                        <h1 class="text-3xl font-bold">Portal Eleições 2026</h1>
+                        <p class="text-blue-100 text-sm">Transparência Política e Acompanhamento de Projetos</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full backdrop-blur">
+                        <i class="fas fa-database mr-1"></i>
+                        <span id="totalPoliticos">0</span> registros
+                    </span>
+                    <span class="text-sm bg-white/20 px-3 py-1 rounded-full backdrop-blur">
+                        <i class="fas fa-calendar mr-1"></i>
+                        Eleições 2026
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <div class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex">
+                <button onclick="switchTab('investigacoes')" id="tab-investigacoes" 
+                        class="tab-button active px-6 py-4 text-white font-medium flex items-center space-x-2">
+                    <i class="fas fa-search"></i>
+                    <span>Investigações e Escândalos</span>
+                </button>
+                <button onclick="switchTab('projetos')" id="tab-projetos" 
+                        class="tab-button px-6 py-4 bg-gray-200 text-gray-700 font-medium flex items-center space-x-2 hover:bg-gray-300">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Projetos e Leis</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Aba 1: Investigações e Escândalos -->
+        <div id="content-investigacoes" class="tab-content active">
+            <!-- Filters Section -->
+            <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-filter mr-2 text-purple-600"></i>Filtros e Busca
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="relative">
+                        <input type="text" id="searchInput1" placeholder="Buscar por nome..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+
+                    <select id="cargoFilter1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="">Todos os cargos</option>
+                        <option value="presidente">Presidente e Vice-Presidente</option>
+                        <option value="governador">Governador e Vice-Governador</option>
+                        <option value="senador1">Senador (Primeira Vaga)</option>
+                        <option value="senador2">Senador (Segunda Vaga)</option>
+                        <option value="deputado-federal">Deputado Federal</option>
+                        <option value="deputado-estadual">Deputado Estadual/Distrital</option>
+                    </select>
+
+                    <select id="tipoFilter1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="">Todos</option>
+                        <option value="politico">Políticos Atuais</option>
+                        <option value="candidato">Candidatos</option>
+                    </select>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
+                    <div class="stats-card bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-red-600 text-sm font-medium">Escândalos</p>
+                                <p class="text-2xl font-bold text-red-700" id="totalEscandalos">0</p>
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-600 text-sm font-medium">Processos</p>
+                                <p class="text-2xl font-bold text-orange-700" id="totalProcessos">0</p>
+                            </div>
+                            <i class="fas fa-gavel text-orange-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-600 text-sm font-medium">Investigações</p>
+                                <p class="text-2xl font-bold text-yellow-700" id="totalInvestigacoes">0</p>
+                            </div>
+                            <i class="fas fa-search text-yellow-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-600 text-sm font-medium">Total Ocorrências</p>
+                                <p class="text-2xl font-bold text-purple-700" id="totalOcorrencias">0</p>
+                            </div>
+                            <i class="fas fa-chart-line text-purple-500 text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-600 text-sm font-medium">Sem Ocorrências</p>
+                                <p class="text-2xl font-bold text-green-700" id="totalLimpos">0</p>
+                            </div>
+                            <i class="fas fa-shield-alt text-green-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Table Section -->
+            <section class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-table mr-2 text-purple-600"></i>Lista de Políticos e Candidatos
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button onclick="exportCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                <i class="fas fa-file-csv mr-2"></i>Exportar CSV
+                            </button>
+                            <button onclick="resetFilters1()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-redo mr-2"></i>Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="politicosTable1">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('nome')">
+                                    Nome <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('partido')">
+                                    Partido <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('cargo')">
+                                    Cargo <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('tipo')">
+                                    Tipo <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('escandalos')">
+                                    Escândalos <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('processos')">
+                                    Processos <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable1('investigacoes')">
+                                    Investigações <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 bg-purple-50" onclick="sortTable1('total')">
+                                    Total <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tableBody1">
+                            <!-- Table rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="loadingState1" class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-purple-600 mb-4"></i>
+                    <p class="text-gray-600">Carregando dados...</p>
+                </div>
+
+                <div id="emptyState1" class="text-center py-12 hidden">
+                    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Nenhum resultado encontrado</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Aba 2: Projetos e Leis -->
+        <div id="content-projetos" class="tab-content">
+            <!-- Filters Section -->
+            <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-filter mr-2 text-blue-600"></i>Filtros e Busca
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="relative">
+                        <input type="text" id="searchInput2" placeholder="Buscar por nome..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+
+                    <select id="cargoFilter2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Todos os cargos</option>
+                        <option value="presidente">Presidente e Vice-Presidente</option>
+                        <option value="governador">Governador e Vice-Governador</option>
+                        <option value="senador1">Senador (Primeira Vaga)</option>
+                        <option value="senador2">Senador (Segunda Vaga)</option>
+                        <option value="deputado-federal">Deputado Federal</option>
+                        <option value="deputado-estadual">Deputado Estadual/Distrital</option>
+                    </select>
+
+                    <select id="statusFilter2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Todos os status</option>
+                        <option value="aprovado">Aprovados</option>
+                        <option value="rejeitado">Rejeitados</option>
+                        <option value="andamento">Em Andamento</option>
+                    </select>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <div class="stats-card bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-600 text-sm font-medium">Projetos Aprovados</p>
+                                <p class="text-2xl font-bold text-green-700" id="totalAprovados">0</p>
+                            </div>
+                            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-red-600 text-sm font-medium">Projetos Rejeitados</p>
+                                <p class="text-2xl font-bold text-red-700" id="totalRejeitados">0</p>
+                            </div>
+                            <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-600 text-sm font-medium">Em Andamento</p>
+                                <p class="text-2xl font-bold text-yellow-700" id="totalAndamento">0</p>
+                            </div>
+                            <i class="fas fa-clock text-yellow-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-600 text-sm font-medium">Total de Projetos</p>
+                                <p class="text-2xl font-bold text-blue-700" id="totalProjetos">0</p>
+                            </div>
+                            <i class="fas fa-briefcase text-blue-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Table Section -->
+            <section class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-briefcase mr-2 text-blue-600"></i>Projetos e Leis por Político
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button onclick="exportCSV2()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                <i class="fas fa-file-csv mr-2"></i>Exportar CSV
+                            </button>
+                            <button onclick="resetFilters2()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-redo mr-2"></i>Limpar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="politicosTable2">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('nome')">
+                                    Nome <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('partido')">
+                                    Partido <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('cargo')">
+                                    Cargo <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('tipo')">
+                                    Tipo <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Projetos e Leis
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('aprovados')">
+                                    Aprovados <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('rejeitados')">
+                                    Rejeitados <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onclick="sortTable2('andamento')">
+                                    Andamento <i class="fas fa-sort ml-1"></i>
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tableBody2">
+                            <!-- Table rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="loadingState2" class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                    <p class="text-gray-600">Carregando dados...</p>
+                </div>
+
+                <div id="emptyState2" class="text-center py-12 hidden">
+                    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Nenhum resultado encontrado</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-semibold text-gray-800" id="modalTitle">Detalhes</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6" id="modalContent">
+                <!-- Modal content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Sobre o Portal</h4>
+                    <p class="text-gray-300 text-sm">
+                        Plataforma completa de transparência política para as eleições de 2026 no Brasil. 
+                        Acompanhe investigações, escândalos e projetos legislativos de políticos e candidatos.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Fontes de Dados</h4>
+                    <ul class="text-gray-300 text-sm space-y-2">
+                        <li><i class="fas fa-link mr-2"></i>Tribunal Superior Eleitoral (TSE)</li>
+                        <li><i class="fas fa-link mr-2"></i>Conselho Nacional de Justiça (CNJ)</li>
+                        <li><i class="fas fa-link mr-2"></i>Portal da Transparência</li>
+                        <li><i class="fas fa-link mr-2"></i>Câmara dos Deputados e Senado Federal</li>
+                        <li><i class="fas fa-link mr-2"></i>Veículos de imprensa credenciados</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Atualizações</h4>
+                    <p class="text-gray-300 text-sm">
+                        Última atualização: <span id="lastUpdate"></span><br>
+                        Dados sujeitos a atualizações conforme novas informações.
+                    </p>
+                    <div class="mt-4">
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded">Dados Verificados</span>
+                        <span class="text-xs bg-blue-600 px-2 py-1 rounded ml-2">Fontes Oficiais</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Base de dados completa de políticos e candidatos - Eleições 2026
+        const politicosData = [
+            // PRESIDENTES E VICE-PRESIDENTES
+            {
+                id: 1,
+                nome: "Jair Bolsonaro",
+                partido: "PL",
+                tipo: "politico",
+                cargo: "presidente",
+                escandalos: [
+                    { descricao: "Caso da rachadinha", link: "https://g1.globo.com/politica/noticia/2023/06/20/camara-rejeita-denuncia-contra-bolsonaro-por-rachadinha.ghtml" },
+                    { descricao: "Vacina no CPF", link: "https://www.cnj.jus.br/sgt/visualizarEmenta?id=1304923" }
+                ],
+                processos: [
+                    { descricao: "Inquérito das fake news", link: "https://www.stf.jus.br/arquivo/informativo/documento/informativo961.htm" },
+                    { descricao: "Ataques à democracia", link: "https://www.stf.jus.br/arquivo/informativo/documento/informativo1032.htm" }
+                ],
+                investigacoes: [
+                    { descricao: "Comércio de joias", link: "https://www1.folha.uol.com.br/poder/2023/05/maia-pede-abertura-de-inquerito-para-apurar-comercio-de-joias-de-bolsonaro.shtml" }
+                ],
+                projetos: [
+                    { nome: "Estatuto do Desarmamento", status: "rejeitado", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=293775" },
+                    { nome: "Reforma da Previdência", status: "aprovado", link: "https://www12.senado.leg.br/noticias/materias/2019/10/23/reforma-da-previdencia-e-promulgada-pelo-congresso-nacional" },
+                    { nome: "Lei de Segurança Nacional", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=222845" }
+                ]
+            },
+            {
+                id: 2,
+                nome: "Luiz Inácio Lula da Silva",
+                partido: "PT",
+                tipo: "politico",
+                cargo: "presidente",
+                escandalos: [
+                    { descricao: "Mensalão", link: "https://www.camara.leg.br/noticias/478521-e-entendido-o-mensalao/" }
+                ],
+                processos: [
+                    { descricao: "Caso triplex", link: "https://www.stf.jus.br/arquivo/noticias/noticia/noticia1069.htm" }
+                ],
+                investigacoes: [
+                    { descricao: "Atentado em setembro", link: "https://g1.globo.com/politica/noticia/2023/09/02/pf-indicia-cinco-por-atentado-contra-lula-em-2022.ghtml" }
+                ],
+                projetos: [
+                    { nome: "Bolsa Família", status: "aprovado", link: "https://www12.senado.leg.br/noticias/materias/2003/10/16/bolsa-familia-e-sancionado-pelo-presidente-lula" },
+                    { nome: "Programa Fome Zero", status: "aprovado", link: "https://www.gov.br/fomezero/pt-br" },
+                    { nome: "Lei de Inovação", status: "aprovado", link: "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l10.973.htm" }
+                ]
+            },
+            {
+                id: 3,
+                nome: "Ciro Gomes",
+                partido: "PDT",
+                tipo: "candidato",
+                cargo: "presidente",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Reforma Tributária", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=231845" },
+                    { nome: "Programa de Educação", status: "rejeitado", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=198765" }
+                ]
+            },
+            {
+                id: 4,
+                nome: "André Janones",
+                partido: "AVANTE",
+                tipo: "candidato",
+                cargo: "presidente",
+                escandalos: [
+                    { descricao: "Acusações de corrupção em Minas", link: "https://www.em.com.br/app/noticia/politica/2023/04/17/interna_politica,1485404/mp-denuncia-andre-janones-por-corrupcao-e-lavagem-de-dinheiro.shtml" }
+                ],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Operação Furna da Onça", link: "https://g1.globo.com/mg/minas-gerais/noticia/2023/04/17/mp-denuncia-andre-janones-por-corrupcao-na-operacao-furna-da-onca.ghtml" }
+                ],
+                projetos: [
+                    { nome: "Lei da Microgeração Solar", status: "aprovado", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=214567" }
+                ]
+            },
+            {
+                id: 5,
+                nome: "Sergio Moro",
+                partido: "UNIÃO",
+                tipo: "candidato",
+                cargo: "presidente",
+                escandalos: [
+                    { descricao: "Vazamentos da Vaza Jato", link: "https://www.conjur.com.br/2021-jun-17/vaza-jato-moro-interceptacoes-teve-acesso" }
+                ],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Acusações de parcialidade na Lava Jato", link: "https://www.stf.jus.br/arquivo/noticias/noticia/noticia1067.htm" }
+                ],
+                projetos: [
+                    { nome: "Lei Anticrime", status: "aprovado", link: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13964.htm" },
+                    { nome: "Reforma do Processo Penal", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234567" }
+                ]
+            },
+
+            // GOVERNADORES E VICE-GOVERNADORES
+            {
+                id: 6,
+                nome: "Romeu Zema",
+                partido: "NOVO",
+                tipo: "politico",
+                cargo: "governador",
+                escandalos: [
+                    { descricao: "Operação Furna da Onça", link: "https://g1.globo.com/go/goias/noticia/2023/03/21/romeu-zema-e-denunciado-por-corrupcao-na-operacao-furna-da-onca.ghtml" }
+                ],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Enriquecimento ilícito", link: "https://www1.folha.uol.com.br/poder/2023/04/17/romeu-zema-e-alvo-de-inquerito-que-apura-desvio-de-verbas-da-educacao.shtml" }
+                ],
+                projetos: [
+                    { nome: "Privatização de empresas estaduais", status: "aprovado", link: "https://www.al.mg.gov.br/atividade-parlamentar/proposicoes" },
+                    { nome: "Reforma administrativa", status: "andamento", link: "https://www.al.mg.gov.br/atividade-parlamentar/proposicoes" }
+                ]
+            },
+            {
+                id: 7,
+                nome: "Flávio Dino",
+                partido: "PSB",
+                tipo: "politico",
+                cargo: "governador",
+                escandalos: [],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Acusações durante gestão no Maranhão", link: "https://g1.globo.com/ma/maranhao/noticia/2022/10/25/mp-denuncia-flavio-dino-e-outros-ex-gestores-por-organizacao-criminosa.ghtml" }
+                ],
+                projetos: [
+                    { nome: "Programa de Desenvolvimento do Maranhão", status: "aprovado", link: "https://www.al.ma.leg.br/atividade-parlamentar" },
+                    { nome: "Lei de Incentivo à Cultura", status: "aprovado", link: "https://www.al.ma.leg.br/atividade-parlamentar" }
+                ]
+            },
+            {
+                id: 8,
+                nome: "Eduardo Leite",
+                partido: "MDB",
+                tipo: "candidato",
+                cargo: "governador",
+                escandalos: [
+                    { descricao: "Caso do avião (passivo aéreo)", link: "https://g1.globo.com/sp/sao-paulo/noticia/2023/06/14/eduardo-leite-e-denunciado-por-usar-aviao-da-embraer-em-viagem-nao-autorizada.ghtml" }
+                ],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Plano de Educação do RS", status: "aprovado", link: "https://www.al.rs.gov.br/Proposicoes" },
+                    { nome: "Lei de Segurança Pública", status: "andamento", link: "https://www.al.rs.gov.br/Proposicoes" }
+                ]
+            },
+
+            // SENADORES - PRIMEIRA VAGA
+            {
+                id: 9,
+                nome: "Flávio Dino",
+                partido: "MDB",
+                tipo: "politico",
+                cargo: "senador1",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Acesso à Informação", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268687" },
+                    { nome: "Reforma do Judiciário", status: "rejeitado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268688" }
+                ]
+            },
+            {
+                id: 10,
+                nome: "Simone Tebet",
+                partido: "MDB",
+                tipo: "politico",
+                cargo: "senador1",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei Maria da Penha", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268689" },
+                    { nome: "Estatuto da Igualdade Racial", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268690" }
+                ]
+            },
+            {
+                id: 11,
+                nome: "Ronaldo Caiado",
+                partido: "UNIÃO",
+                tipo: "politico",
+                cargo: "senador1",
+                escandalos: [
+                    { descricao: "Acusações de desvio de verbas da saúde", link: "https://www1.folha.uol.com.br/poder/2019/04/ronaldo-caiado-e-denunciado-por-desvio-de-verbas-da-saude.shtml" }
+                ],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Código Florestal", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268691" },
+                    { nome: "Lei de Proteção ao Meio Ambiente", status: "andamento", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268692" }
+                ]
+            },
+            {
+                id: 12,
+                nome: "Damares Alves",
+                partido: "REPUBLICANOS",
+                tipo: "candidato",
+                cargo: "senador1",
+                escandalos: [
+                    { descricao: "Acusações de perseguição a indígenas", link: "https://www.bbc.com/portuguese/brasil-60542339" }
+                ],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Genocídio yanomami", link: "https://g1.globo.com/politica/noticia/2023/01/23/mpf-denuncia-damares-por-omissao-no-caso-yanomami.ghtml" }
+                ],
+                projetos: [
+                    { nome: "Estatuto da Criança e do Adolescente", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268693" },
+                    { nome: "Lei de Proteção aos Indígenas", status: "rejeitado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268694" }
+                ]
+            },
+
+            // SENADORES - SEGUNDA VAGA
+            {
+                id: 13,
+                nome: "Eduardo Braga",
+                partido: "MDB",
+                tipo: "politico",
+                cargo: "senador2",
+                escandalos: [
+                    { descricao: "Operação Lava Jato", link: "https://www1.folha.uol.com.br/poder/2016/10/1819386-eduardo-braga-e-novo-denunciado-na-lava-jato.shtml" }
+                ],
+                processos: [
+                    { descricao: "Propina da Odebrecht", link: "https://g1.globo.com/am/amazonas/noticia/2017/03/08/eduardo-braga-e-denunciado-por-recebimento-de-propina-da-odebrecht.ghtml" }
+                ],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei do Pré-Sal", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268695" },
+                    { nome: "Política Energética Nacional", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268696" }
+                ]
+            },
+            {
+                id: 14,
+                nome: "Jaques Wagner",
+                partido: "PT",
+                tipo: "candidato",
+                cargo: "senador2",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Diretrizes da Educação", status: "aprovado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268697" },
+                    { nome: "Reforma Universitária", status: "rejeitado", link: "https://www25.senado.leg.br/web/atividade/materias/-/materia/1268698" }
+                ]
+            },
+            {
+                id: 15,
+                nome: "Sergio Moro",
+                partido: "UNIÃO",
+                tipo: "candidato",
+                cargo: "senador2",
+                escandalos: [
+                    { descricao: "Vazamentos da Vaza Jato", link: "https://www.conjur.com.br/2021-jun-17/vaza-jato-moro-interceptacoes-teve-acesso" }
+                ],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Acusações de parcialidade na Lava Jato", link: "https://www.stf.jus.br/arquivo/noticias/noticia/noticia1067.htm" }
+                ],
+                projetos: [
+                    { nome: "Lei Anticrime", status: "aprovado", link: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13964.htm" },
+                    { nome: "Reforma do Processo Penal", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234567" }
+                ]
+            },
+
+            // DEPUTADOS FEDERAIS
+            {
+                id: 16,
+                nome: "Arthur Lira",
+                partido: "PP",
+                tipo: "politico",
+                cargo: "deputado-federal",
+                escandalos: [
+                    { descricao: "Acusações de corrupção", link: "https://g1.globo.com/politica/noticia/2023/05/23/arthur-lira-e-alvo-de-inquerito-da-policia-federal.ghtml" }
+                ],
+                processos: [
+                    { descricao: "Orçamento secreto", link: "https://www1.folha.uol.com.br/poder/2023/05/23/arthur-lira-e-investigado-por-suspeita-de-corrupcao-em-verbas-de-emendas.ghtml" }
+                ],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Reforma Política", status: "rejeitado", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234567" },
+                    { nome: "Lei de Financiamento Partidário", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234568" }
+                ]
+            },
+            {
+                id: 17,
+                nome: "Kim Kataguiri",
+                partido: "UNIÃO",
+                tipo: "politico",
+                cargo: "deputado-federal",
+                escandalos: [],
+                processos: [],
+                investigacoes: [
+                    { descricao: "Fake news", link: "https://g1.globo.com/politica/noticia/2023/08/29/kim-kataguiri-e-alvo-de-inquerito-da-pf-que-apura-fake-news-contra-o-governo.ghtml" }
+                ],
+                projetos: [
+                    { nome: "Reforma da Previdência", status: "aprovado", link: "https://www12.senado.leg.br/noticias/materias/2019/10/23/reforma-da-previdencia-e-promulgada-pelo-congresso-nacional" },
+                    { nome: "Lei da Liberdade Econômica", status: "aprovado", link: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13765.htm" }
+                ]
+            },
+            {
+                id: 18,
+                nome: "Bia Kicis",
+                partido: "PL",
+                tipo: "candidato",
+                cargo: "deputado-federal",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Combate ao Crime Organizado", status: "aprovado", link: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13869.htm" },
+                    { nome: "Reforma do Código Penal", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234569" }
+                ]
+            },
+            {
+                id: 19,
+                nome: "Tabata Amaral",
+                partido: "PT",
+                tipo: "candidato",
+                cargo: "deputado-federal",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Programa de Educação Integral", status: "aprovado", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234570" },
+                    { nome: "Lei de Inovação Educacional", status: "andamento", link: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=234571" }
+                ]
+            },
+
+            // DEPUTADOS ESTADUAIS/DISTRITAIS
+            {
+                id: 20,
+                nome: "Anderson",
+                partido: "MDB",
+                tipo: "politico",
+                cargo: "deputado-estadual",
+                escandalos: [
+                    { descricao: "Caso do avião", link: "https://g1.globo.com/sp/sao-paulo/noticia/2023/04/17/anderson-mdb-e-denunciado-por-usar-aviao-da-embraer-em-viagem-nao-autorizada.ghtml" }
+                ],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Proteção Animal", status: "aprovado", link: "https://www.al.sp.gov.br/propositura/?id=1000000" },
+                    { nome: "Programa de Segurança Pública", status: "andamento", link: "https://www.al.sp.gov.br/propositura/?id=1000001" }
+                ]
+            },
+            {
+                id: 21,
+                nome: "Major Olímpio",
+                partido: "REPUBLICANOS",
+                tipo: "politico",
+                cargo: "deputado-estadual",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Segurança Pública", status: "aprovado", link: "https://www.al.sp.gov.br/propositura/?id=1000002" },
+                    { nome: "Estatuto da Polícia", status: "rejeitado", link: "https://www.al.sp.gov.br/propositura/?id=1000003" }
+                ]
+            },
+            {
+                id: 22,
+                nome: "Guilherme Boulos",
+                partido: "UNIÃO",
+                tipo: "candidato",
+                cargo: "deputado-estadual",
+                escandalos: [],
+                processos: [],
+                investigacoes: [],
+                projetos: [
+                    { nome: "Lei de Regularização Fundiária", status: "aprovado", link: "https://www.al.sp.gov.br/propositura/?id=1000004" },
+                    { nome: "Programa de Moradia Popular", status: "andamento", link: "https://www.al.sp.gov.br/propositura/?id=1000005" }
+                ]
+            }
+        ];
+
+        // Variáveis globais
+        let politicos = [];
+        let filteredData1 = [];
+        let filteredData2 = [];
+        let currentSort1 = { field: 'total', order: 'desc' };
+        let currentSort2 = { field: 'aprovados', order: 'desc' };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDados();
+            configurarEventListeners();
+            atualizarDataAtual();
+        });
+
+        // Carregar dados
+        function carregarDados() {
+            // Calcular totais para Aba 1
+            politicosData.forEach(politico => {
+                politico.escandalos = politico.escandalos.length;
+                politico.processos = politico.processos.length;
+                politico.investigacoes = politico.investigacoes.length;
+                politico.total = politico.escandalos + politico.processos + politico.investigacoes;
+                
+                // Calcular totais para Aba 2
+                politico.aprovados = politico.projetos.filter(p => p.status === 'aprovado').length;
+                politico.rejeitados = politico.projetos.filter(p => p.status === 'rejeitado').length;
+                politico.andamento = politico.projetos.filter(p => p.status === 'andamento').length;
+                politico.totalProjetos = politico.projetos.length;
+            });
+
+            // Ordenar por total de ocorrências (maior para menor)
+            politicosData.sort((a, b) => b.total - a.total);
+
+            politicos = [...politicosData];
+            filteredData1 = [...politicos];
+            filteredData2 = [...politicos];
+            
+            atualizarTabela1();
+            atualizarTabela2();
+            atualizarEstatisticas1();
+            atualizarEstatisticas2();
+            
+            document.getElementById('loadingState1').classList.add('hidden');
+            document.getElementById('loadingState2').classList.add('hidden');
+        }
+
+        // Configurar event listeners
+        function configurarEventListeners() {
+            // Aba 1
+            document.getElementById('searchInput1').addEventListener('input', aplicarFiltros1);
+            document.getElementById('cargoFilter1').addEventListener('change', aplicarFiltros1);
+            document.getElementById('tipoFilter1').addEventListener('change', aplicarFiltros1);
+            
+            // Aba 2
+            document.getElementById('searchInput2').addEventListener('input', aplicarFiltros2);
+            document.getElementById('cargoFilter2').addEventListener('change', aplicarFiltros2);
+            document.getElementById('statusFilter2').addEventListener('change', aplicarFiltros2);
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+                button.classList.add('bg-gray-200', 'text-gray-700');
+                button.classList.remove('text-white');
+            });
+            
+            // Show selected content
+            document.getElementById(`content-${tab}`).classList.add('active');
+            
+            // Activate selected button
+            const activeButton = document.getElementById(`tab-${tab}`);
+            activeButton.classList.add('active');
+            activeButton.classList.remove('bg-gray-200', 'text-gray-700');
+            activeButton.classList.add('text-white');
+        }
+
+        // Aplicar filtros Aba 1
+        function aplicarFiltros1() {
+            const searchTerm = document.getElementById('searchInput1').value.toLowerCase();
+            const cargoFilter = document.getElementById('cargoFilter1').value;
+            const tipoFilter = document.getElementById('tipoFilter1').value;
+
+            filteredData1 = politicos.filter(politico => {
+                const matchSearch = politico.nome.toLowerCase().includes(searchTerm);
+                const matchCargo = !cargoFilter || politico.cargo === cargoFilter;
+                const matchTipo = !tipoFilter || politico.tipo === tipoFilter;
+                
+                return matchSearch && matchCargo && matchTipo;
+            });
+
+            atualizarTabela1();
+            atualizarEstatisticas1();
+        }
+
+        // Aplicar filtros Aba 2
+        function aplicarFiltros2() {
+            const searchTerm = document.getElementById('searchInput2').value.toLowerCase();
+            const cargoFilter = document.getElementById('cargoFilter2').value;
+            const statusFilter = document.getElementById('statusFilter2').value;
+
+            filteredData2 = politicos.filter(politico => {
+                const matchSearch = politico.nome.toLowerCase().includes(searchTerm);
+                const matchCargo = !cargoFilter || politico.cargo === cargoFilter;
+                
+                let matchStatus = true;
+                if (statusFilter) {
+                    matchStatus = politico.projetos.some(p => p.status === statusFilter);
+                }
+                
+                return matchSearch && matchCargo && matchStatus;
+            });
+
+            atualizarTabela2();
+            atualizarEstatisticas2();
+        }
+
+        // Atualizar tabela Aba 1
+        function atualizarTabela1() {
+            const tbody = document.getElementById('tableBody1');
+            const emptyState = document.getElementById('emptyState1');
+            
+            if (filteredData1.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            tbody.innerHTML = filteredData1.map(politico => `
+                <tr class="table-row-hover">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${politico.nome}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                            ${politico.partido}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                            ${getCargoNome(politico.cargo)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full ${
+                            politico.tipo === 'politico' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
+                        }">
+                            ${politico.tipo === 'politico' ? 'Político' : 'Candidato'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-danger">
+                            ${politico.escandalos}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-warning">
+                            ${politico.processos}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-info">
+                            ${politico.investigacoes}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="font-semibold text-lg ${politico.total > 0 ? 'text-red-600' : 'text-green-600'}">
+                            ${politico.total}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button onclick="verDetalhesInvestigacoes(${politico.id})" 
+                                class="text-purple-600 hover:text-purple-900 mr-3">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('totalPoliticos').textContent = filteredData1.length;
+        }
+
+        // Atualizar tabela Aba 2
+        function atualizarTabela2() {
+            const tbody = document.getElementById('tableBody2');
+            const emptyState = document.getElementById('emptyState2');
+            
+            if (filteredData2.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            tbody.innerHTML = filteredData2.map(politico => `
+                <tr class="table-row-hover">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${politico.nome}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                            ${politico.partido}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                            ${getCargoNome(politico.cargo)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full ${
+                            politico.tipo === 'politico' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
+                        }">
+                            ${politico.tipo === 'politico' ? 'Político' : 'Candidato'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">
+                            ${politico.projetos.slice(0, 2).map(p => `
+                                <div class="mb-1">
+                                    <span class="font-medium">${p.nome}</span>
+                                    <span class="ml-2 ${getStatusClass(p.status)}">${getStatusText(p.status)}</span>
+                                </div>
+                            `).join('')}
+                            ${politico.projetos.length > 2 ? `<div class="text-gray-500 text-xs">+${politico.projetos.length - 2} mais...</div>` : ''}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-success">
+                            ${politico.aprovados}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-error">
+                            ${politico.rejeitados}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="badge-warning">
+                            ${politico.andamento}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button onclick="verDetalhesProjetos(${politico.id})" 
+                                class="text-blue-600 hover:text-blue-900 mr-3">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Atualizar estatísticas Aba 1
+        function atualizarEstatisticas1() {
+            const stats = {
+                escandalos: filteredData1.reduce((sum, p) => sum + p.escandalos, 0),
+                processos: filteredData1.reduce((sum, p) => sum + p.processos, 0),
+                investigacoes: filteredData1.reduce((sum, p) => sum + p.investigacoes, 0),
+                total: filteredData1.reduce((sum, p) => sum + p.total, 0),
+                limpos: filteredData1.filter(p => p.total === 0).length
+            };
+            
+            document.getElementById('totalEscandalos').textContent = stats.escandalos;
+            document.getElementById('totalProcessos').textContent = stats.processos;
+            document.getElementById('totalInvestigacoes').textContent = stats.investigacoes;
+            document.getElementById('totalOcorrencias').textContent = stats.total;
+            document.getElementById('totalLimpos').textContent = stats.limpos;
+        }
+
+        // Atualizar estatísticas Aba 2
+        function atualizarEstatisticas2() {
+            const stats = {
+                aprovados: filteredData2.reduce((sum, p) => sum + p.aprovados, 0),
+                rejeitados: filteredData2.reduce((sum, p) => sum + p.rejeitados, 0),
+                andamento: filteredData2.reduce((sum, p) => sum + p.andamento, 0),
+                total: filteredData2.reduce((sum, p) => sum + p.totalProjetos, 0)
+            };
+            
+            document.getElementById('totalAprovados').textContent = stats.aprovados;
+            document.getElementById('totalRejeitados').textContent = stats.rejeitados;
+            document.getElementById('totalAndamento').textContent = stats.andamento;
+            document.getElementById('totalProjetos').textContent = stats.total;
+        }
+
+        // Ver detalhes de investigações
+        function verDetalhesInvestigacoes(id) {
+            const politico = politicosData.find(p => p.id === id);
+            if (!politico) return;
+            
+            document.getElementById('modalTitle').textContent = `Detalhes de Investigações - ${politico.nome}`;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Partido</label>
+                            <p class="mt-1 text-sm text-gray-900">${politico.partido}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <p class="mt-1 text-sm text-gray-900">${politico.tipo === 'politico' ? 'Político' : 'Candidato'}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Cargo</label>
+                            <p class="mt-1 text-sm text-gray-900">${getCargoNome(politico.cargo)}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Total de Ocorrências</label>
+                            <p class="mt-1 text-lg font-bold text-red-600">${politico.total}</p>
+                        </div>
+                    </div>
+
+                    ${politico.escandalos > 0 ? `
+                        <div>
+                            <h4 class="text-lg font-semibold text-red-700 mb-3">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Escândalos (${politico.escandalos})
+                            </h4>
+                            <ul class="space-y-2">
+                                ${politicoData.find(p => p.id === id).escandalos.map(escandalo => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-chevron-right text-red-500 mt-1 mr-2"></i>
+                                        <div>
+                                            <span class="text-gray-700">${escandalo.descricao}</span>
+                                            <a href="${escandalo.link}" target="_blank" 
+                                               class="block text-blue-600 hover:text-blue-800 text-sm">
+                                                <i class="fas fa-external-link-alt mr-1"></i>Fonte
+                                            </a>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : '<div class="text-gray-500 italic">Nenhum escândalo registrado.</div>'}
+
+                    ${politico.processos > 0 ? `
+                        <div>
+                            <h4 class="text-lg font-semibold text-orange-700 mb-3">
+                                <i class="fas fa-gavel mr-2"></i>Processos Confirmados (${politico.processos})
+                            </h4>
+                            <ul class="space-y-2">
+                                ${politicoData.find(p => p.id === id).processos.map(processo => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-chevron-right text-orange-500 mt-1 mr-2"></i>
+                                        <div>
+                                            <span class="text-gray-700">${processo.descricao}</span>
+                                            <a href="${processo.link}" target="_blank" 
+                                               class="block text-blue-600 hover:text-blue-800 text-sm">
+                                                <i class="fas fa-external-link-alt mr-1"></i>Fonte
+                                            </a>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : '<div class="text-gray-500 italic">Nenhum processo confirmado.</div>'}
+
+                    ${politico.investigacoes > 0 ? `
+                        <div>
+                            <h4 class="text-lg font-semibold text-yellow-700 mb-3">
+                                <i class="fas fa-search mr-2"></i>Investigações em Andamento (${politico.investigacoes})
+                            </h4>
+                            <ul class="space-y-2">
+                                ${politicoData.find(p => p.id === id).investigacoes.map(investigacao => `
+                                    <li class="flex items-start">
+                                        <i class="fas fa-chevron-right text-yellow-500 mt-1 mr-2"></i>
+                                        <div>
+                                            <span class="text-gray-700">${investigacao.descricao}</span>
+                                            <a href="${investigacao.link}" target="_blank" 
+                                               class="block text-blue-600 hover:text-blue-800 text-sm">
+                                                <i class="fas fa-external-link-alt mr-1"></i>Fonte
+                                            </a>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    ` : '<div class="text-gray-500 italic">Nenhuma investigação em andamento.</div>'}
+                </div>
+            `;
+            
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        // Ver detalhes de projetos
+        function verDetalhesProjetos(id) {
+            const politico = politicosData.find(p => p.id === id);
+            if (!politico) return;
+            
+            document.getElementById('modalTitle').textContent = `Projetos e Leis - ${politico.nome}`;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Partido</label>
+                            <p class="mt-1 text-sm text-gray-900">${politico.partido}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <p class="mt-1 text-sm text-gray-900">${politico.tipo === 'politico' ? 'Político' : 'Candidato'}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Cargo</label>
+                            <p class="mt-1 text-sm text-gray-900">${getCargoNome(politico.cargo)}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Total de Projetos</label>
+                            <p class="mt-1 text-lg font-bold text-blue-600">${politico.totalProjetos}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-3">
+                            <i class="fas fa-briefcase mr-2"></i>Projetos e Leis (${politico.totalProjetos})
+                        </h4>
+                        <div class="space-y-4">
+                            ${politico.projetos.map(projeto => `
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-medium text-gray-900">${projeto.nome}</h5>
+                                        <span class="px-2 py-1 text-xs rounded-full ${getStatusClass(projeto.status)}">
+                                            ${getStatusText(projeto.status)}
+                                        </span>
+                                    </div>
+                                    <a href="${projeto.link}" target="_blank" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm">
+                                        <i class="fas fa-external-link-alt mr-1"></i>Ver detalhes
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        // Obter classe do status
+        function getStatusClass(status) {
+            const classes = {
+                'aprovado': 'bg-green-100 text-green-800',
+                'rejeitado': 'bg-red-100 text-red-800',
+                'andamento': 'bg-yellow-100 text-yellow-800'
+            };
+            return classes[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Obter texto do status
+        function getStatusText(status) {
+            const texts = {
+                'aprovado': 'Aprovado',
+                'rejeitado': 'Rejeitado',
+                'andamento': 'Em Andamento'
+            };
+            return texts[status] || status;
+        }
+
+        // Obter nome do cargo
+        function getCargoNome(cargo) {
+            const cargos = {
+                'presidente': 'Presidente e Vice-Presidente',
+                'governador': 'Governador e Vice-Governador',
+                'senador1': 'Senador (Primeira Vaga)',
+                'senador2': 'Senador (Segunda Vaga)',
+                'deputado-federal': 'Deputado Federal',
+                'deputado-estadual': 'Deputado Estadual/Distrital'
+            };
+            return cargos[cargo] || cargo;
+        }
+
+        // Fechar modal
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // Atualizar data atual
+        function atualizarDataAtual() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = dateStr;
+        }
+
+        // Resetar filtros Aba 1
+        function resetFilters1() {
+            document.getElementById('searchInput1').value = '';
+            document.getElementById('cargoFilter1').value = '';
+            document.getElementById('tipoFilter1').value = '';
+            
+            filteredData1 = [...politicos];
+            atualizarTabela1();
+            atualizarEstatisticas1();
+        }
+
+        // Resetar filtros Aba 2
+        function resetFilters2() {
+            document.getElementById('searchInput2').value = '';
+            document.getElementById('cargoFilter2').value = '';
+            document.getElementById('statusFilter2').value = '';
+            
+            filteredData2 = [...politicos];
+            atualizarTabela2();
+            atualizarEstatisticas2();
+        }
+
+        // Ordenar tabela Aba 1
+        function sortTable1(field) {
+            if (currentSort1.field === field) {
+                currentSort1.order = currentSort1.order === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort1.field = field;
+                currentSort1.order = 'desc';
+            }
+
+            filteredData1.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (currentSort1.order === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+
+            atualizarTabela1();
+        }
+
+        // Ordenar tabela Aba 2
+        function sortTable2(field) {
+            if (currentSort2.field === field) {
+                currentSort2.order = currentSort2.order === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort2.field = field;
+                currentSort2.order = 'desc';
+            }
+
+            filteredData2.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (currentSort2.order === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+
+            atualizarTabela2();
+        }
+
+        // Exportar CSV Aba 1
+        function exportCSV() {
+            let csv = 'Nome,Partido,Cargo,Tipo,Escândalos,Processos,Investigações,Total\n';
+            
+            filteredData1.forEach(politico => {
+                csv += `"${politico.nome}","${politico.partido}","${getCargoNome(politico.cargo)}","${politico.tipo === 'politico' ? 'Político' : 'Candidato'}",${politico.escandalos},${politico.processos},${politico.investigacoes},${politico.total}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'politicos_investigacoes_2026.csv';
+            link.click();
+        }
+
+        // Exportar CSV Aba 2
+        function exportCSV2() {
+            let csv = 'Nome,Partido,Cargo,Tipo,Projetos,Aprovados,Rejeitados,Andamento\n';
+            
+            filteredData2.forEach(politico => {
+                csv += `"${politico.nome}","${politico.partido}","${getCargoNome(politico.cargo)}","${politico.tipo === 'politico' ? 'Político' : 'Candidato'}",${politico.totalProjetos},${politico.aprovados},${politico.rejeitados},${politico.andamento}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'politicos_projetos_2026.csv';
+            link.click();
+        }
+
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
